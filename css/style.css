@@ -1,0 +1,144 @@
+html,body{
+	margin:0;
+	padding:0;
+	height:100%;
+	font-family: arial;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    padding-bottom: 60px;
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+/* LAYOUT STYLES */
+.page-width{
+	width: 800px; 
+	margin:0 auto; 
+}
+
+#banner-ct{
+	height:60px;
+}
+
+#main-nav-ct{
+	height:40px; 
+	background-color: gray; 
+}
+
+#main-content-ct{
+
+}
+
+#footer-ct{
+	height:30px; 
+	background-color: gray;
+	width:100%;
+	position: fixed;
+	bottom: 0px;
+}
+
+
+
+
+.content{
+	padding: 40px 0;
+}
+
+#banner{}
+
+#footer{
+	color:white;
+	background-color: gray;
+	font-size: 60%;
+	line-height: 30px;
+}
+#footer a{
+	color: white;
+	text-decoration: none;
+}
+
+/* STYLES FOR FORMS */
+.row{ 
+	overflow:auto; 
+	padding-bottom: 20px;
+}
+
+.label{ 
+	float:left;
+	width:200px;
+}
+
+.control{
+	float:left; 
+	width:200px;
+}
+
+/* STYLES FOR MAIN NAVIGATION */
+#main-nav{
+	height:100%;
+}
+
+#main-nav ul{
+	margin:0;
+	padding:0;
+}
+
+#main-nav ul li{
+	margin:0;
+	padding:0;
+	list-style: none;
+	float: left;
+	height:100%;
+}
+
+#main-nav ul li a{
+	display: block;
+	color: white;
+	padding: 0 20px;
+	text-decoration: none;
+	height: 100%;
+	line-height: 40px;
+}
+
+#main-nav ul li a:hover{
+	text-decoration: underline;
+}
+
+#main-nav ul li:hover {
+    background-color: lightGray;
+}
+
+#main-nav ul li a.selected{
+	color: white;
+	background-color:black;
+}
+
+
+
+@media screen and (max-width:800px){
+	.label, .control{ 
+		float: none;  
+	}
+	.page-width{
+		width:100%; 
+	}
+	#banner-ct{
+		height:30px;
+		padding:0 20px;
+	}
+	#banner-ct h1{
+		font-size: 24px;
+	}
+	.content{
+		padding: 20px;
+	}
+}
+
+
+
+

@@ -9,24 +9,26 @@ function log_error($error) {
     echo $error;
 }
 
+define("MODE", "development");
+
 // global configuration settings
-if(/*$_SERVER['SERVER_NAME'] == "localhost"*/true){
+if (MODE === "development") {
 	// DEV ENVIRONMENT SETTINGS
 	error_reporting(E_ALL);
 	define("DEBUG_MODE", true);
-	define("DB_HOST", "127.0.0.1");
+	define("DB_HOST", "localhost");
 	define("DB_USER", "root");
 	define("DB_PASSWORD", "falcon16");
 	define("DB_NAME", "blog_db");
-	define("URL_ROOT_LOCATION", "/final-project/");
-}else{
+	define("ROOT_DIR", "/final-project/");
+} else {
 	// PRODUCTION SETTINGS
 	define("DEBUG_MODE", false);
 	define("DB_HOST", "production db server goes here");
 	define("DB_USER", "production user name goes here");
 	define("DB_PASSWORD", "production password goes here");
 	define("DB_NAME", "production db name goes here");
-	define("URL_ROOT_LOCATION", "production url root location goes here");
+	define("ROOT_DIR", "production url root location goes here");
 }
 
 function get_nav_menus() {
@@ -59,11 +61,11 @@ session_set_save_handler(
 session_start();
 
 // global functions
-function db_connect($db_hostname, $db_user, $db_password, $db_database){
+function db_connect($db_hostname, $db_user, $db_password, $db_database) {
 
 	$link = mysqli_connect($db_hostname, $db_user, $db_password, $db_database);
 
-	if(!$link){
+	if (!$link) {
 		log_error(mysqli_connect_error());
 	}
 
@@ -71,8 +73,16 @@ function db_connect($db_hostname, $db_user, $db_password, $db_database){
 
 }
 
+function is_development_mode() {
+    return (MODE === "development");
+}
+
+function is_production_mode() {
+    return (MODE === "production");
+}
+
 function global_url($url) {
-    return URL_ROOT_LOCATION . $url;
+    return ROOT_DIR . $url;
 }
 
 function echo_global_url($url) {

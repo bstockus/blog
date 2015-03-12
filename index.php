@@ -1,6 +1,6 @@
 <?php
 include("includes/common.inc.php");
-include("includes/PageUtils.inc.php");
+require_once("includes/PageUtils.inc.php");
 
 $pu = new PageUtils();
 $meta_title = "This is the home page";
@@ -8,7 +8,7 @@ $meta_description = "This is the description of the page";
 
 echo($pu->get_header($meta_title, $meta_description));
 echo($pu->get_banner());
-echo($pu->get_navigation("HOME"));
+echo($pu->get_main_navigation("HOME"));
 
 $content = <<<EOD
 <h3>Welcome to this website, here is some Lorem Ipsum</h3>

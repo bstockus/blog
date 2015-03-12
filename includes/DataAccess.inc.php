@@ -56,6 +56,22 @@ class DataAccess{
 			//TODO: handle errors in production
 		}
 	}
+	
+	/**
+	 * Fetch all categories ordered by category_name
+	 * 
+	 * @return array
+	 */
+	function get_categories() {
+	    $qStr = "SELECT category_id, category_name FROM categories ORDER BY category_name";
+	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
+	    $categories = array();
+	    while ($row = mysqli_fetch_assoc($result)) {
+	        $categories[] = $row;
+	    }
+	    
+	    return $categories;
+	}
 
 }
 // notice there is no closing php delimiter for files that are meant to be embedded

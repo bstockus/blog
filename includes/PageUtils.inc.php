@@ -5,6 +5,9 @@
 * This class contains methods that are useful in constructing pages.
 *
 */
+
+require_once('AdminUtils.inc.php');
+
 class PageUtils{
 		
 	function __construct(){
@@ -45,8 +48,6 @@ EOD;
 		return $str;
 	}
 
-
-
 	/**
 	* Assembles the markup for the page footer, including the closing body and html tags
 	*
@@ -57,9 +58,24 @@ EOD;
 	    $privacy_policy_link_url = global_url('privacy-policy.php');
 	    $contact_link_url = global_url('contact.php');
 	    
+	    $mode = "";
+	    if (is_development_mode()) {
+	        $mode = "DEVELOPMENT";
+	    }
+	    
+	    $au = new AdminUtils();
+	    $user = "";
+	    if ($au->user_authenticated()) {
+	        if (is_development_mode()) {
+	            $user = " | ";
+	        }
+	        $user .= "User: " . $_SESSION['user_display_name'];
+	    }
+	    
 $str = <<<EOD
 <div id="footer-ct">
 	<div id="footer" class="page-width">
+	    <span class="pull-right">{$mode}{$user}</span>
 		&copy; 2015 Bryan Stockus, All Rights Reserved.    |    
 		<a href="{$privacy_policy_link_url}">Privacy Policy</a>    |    
 		<a href="{$contact_link_url}">Contact</a>
@@ -70,8 +86,28 @@ $str = <<<EOD
 EOD;
 		return $str;		
 	}
-
-
+    
+    /**
+     * Assembles the markup for the main navigation bar
+     * 
+     * @param string $selected_item the item in the navigation menu that should be selected
+     */
+    function get_main_navigation($selected_item = "") {
+        
+        return $this->get_navigation($selected_item);
+        
+    }
+    
+    /**
+     * Assembles the markup for the control panel navigation bar
+     * 
+     * @param string $selected_item the item in the navigation menu that should be selected
+     */
+    function get_control_panel_navigation($selected_item = "") {
+        
+        return $this->get_navigation($selected_item, "control-panel");
+        
+    }
 
 	/**
 	* Assembles the markup for the navigation bar
@@ -82,12 +118,22 @@ EOD;
 	* @return string 
 	*/
 	function get_navigation($selected_item = "", $menu_id = "main"){
-
-		$nav_menus = get_nav_menus();
 		
-		$nav_links = $nav_menus[$menu_id];
-		
-		$str = "<div id=\"main-nav-ct\">
+		return $this->wrap_nav_links(get_nav_menus()[$menu_id], $selected_item);
+				
+	}
+	
+	/**
+	 * Wraps the Passed Navlinks in the Navigation Bar StyleSheet
+	 * 
+	 * @param array $nav_links the array of navlinks to use
+	 * @param string $selected_item the item in the navigation menu that should be selected
+	 * 
+	 * @return string
+	 */
+	private function wrap_nav_links($nav_links, $selected_item = "") {
+	    
+	    $str = "<div id=\"main-nav-ct\">
 					<div id=\"main-nav\" class=\"page-width\">
 						<ul>";
 
@@ -108,10 +154,9 @@ EOD;
 			</div>
 		</div>";
 
-		return $str;		
+		return $str;
+	    
 	}
-
-
 
 	/**
 	* Assembles the markup for the page banner
@@ -130,8 +175,6 @@ EOD;
 		return $str;		
 	}
 
-
-
 	/**
 	* Assembles the markup for the main content of the page, the content get wrapped
 	* divs that allow for consistent styling
@@ -148,6 +191,24 @@ EOD;
 				</div>";
 
 		return $str;
+	}
+	
+	/**
+	 * Starts the pages content block
+	 * 
+	 * @return string
+	 */
+	function get_content_start() {
+	    return "<div class=\"page-width\"><div class=\"content\">";
+	}
+	
+	/**
+	 * Ends the pages content block
+	 * 
+	 * @return string
+	 */
+	function get_content_end() {
+	    return "</div></div>";
 	}
 
 

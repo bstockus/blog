@@ -10,7 +10,8 @@ class AdminUtils{
 	* Encrypts a string, using an md5 hash
 	*
 	* @param string $password 	The string to encrypt
-	* @param string the encrypted string
+	* 
+	* @return string the encrypted string
 	*/
 	function encrypt_password($password){
 		return md5($password);
@@ -18,14 +19,21 @@ class AdminUtils{
 
 	/**
 	* Checks the session variable to see if a user has been authenticated
-	*
+	* 
+	* @param bool $redirect if not authenticated redirect to login page
+	* 
 	* @return bool
 	*/
-	function user_authenticated(){
+	function user_authenticated($redirect = false){
 		if(isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true){
 			return true;
 		}else{
-			return false;
+		    if ($redirect) {
+		        header('Location: login.php');
+		        die();
+		    } else {
+		        return false;
+		    }
 		}
 	}
 

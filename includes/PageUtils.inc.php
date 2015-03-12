@@ -160,15 +160,17 @@ EOD;
 
 	/**
 	* Assembles the markup for the page banner
+	* 
+	* @param string $title the title for the banner
 	*
 	* @return string the html markup for the banner
 	*/
-	function get_banner(){
+	function get_banner($title){
 
 $str = <<<EOD
 <div id="banner-ct">
 	<div id="banner" class="page-width">
-		<h1>This is the banner</h1>
+		<h1>{$title}</h1>
 	</div>
 </div>
 EOD;

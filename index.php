@@ -7,7 +7,7 @@ $meta_title = "This is the home page";
 $meta_description = "This is the description of the page";
 
 echo($pu->get_header($meta_title, $meta_description));
-echo($pu->get_banner());
+echo($pu->get_banner("Bryan Stockus"));
 echo($pu->get_main_navigation("HOME"));
 
 $content = <<<EOD

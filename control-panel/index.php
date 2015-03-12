@@ -11,7 +11,7 @@ $pu = new PageUtils();
 $meta_title = "Control Panel";
 
 echo($pu->get_header($meta_title));
-echo($pu->get_banner());
+echo($pu->get_banner("Control Panel"));
 echo($pu->get_control_panel_navigation("HOME"));
 
 $content = "HELLO " . $_SESSION['user_display_name'];

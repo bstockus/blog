@@ -38,9 +38,9 @@ function get_nav_menus() {
 		    array("url" => "blog.php", "text" => "BLOG"),
 		    array("url" => "contact.php", "text" => "CONTACT")
 	    ), "control-panel" => array(
-	        array("url" => "index.php", "text" => "HOME"),
-		    array("url" => "blog.php", "text" => "BLOG"),
-		    array("url" => "contact.php", "text" => "CONTACT")
+	        array("url" => "control-panel/index.php", "text" => "HOME"),
+		    array("url" => "control-panel/categories/index.php", "text" => "CATEGORIES"),
+		    array("url" => "control-panel/posts/index.php", "text" => "POSTS")
 	    )
 	);
 }

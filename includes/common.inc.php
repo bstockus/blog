@@ -40,7 +40,8 @@ function get_nav_menus() {
 	    ), "control-panel" => array(
 	        array("url" => "control-panel/index.php", "text" => "HOME"),
 		    array("url" => "control-panel/categories/index.php", "text" => "CATEGORIES"),
-		    array("url" => "control-panel/posts/index.php", "text" => "POSTS")
+		    array("url" => "control-panel/posts/index.php", "text" => "POSTS"),
+		    array("url" => "control-panel/images/index.php", "text" => "IMAGES")
 	    )
 	);
 }

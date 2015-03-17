@@ -72,6 +72,38 @@ class DataAccess{
 	    
 	    return $categories;
 	}
-
+	
+	/**
+	 * Fetch all images ordered by image_filename
+	 * 
+	 * @return array
+	 */
+	function get_images() {
+	    $qStr = "SELECT image_id, image_filename, image_active FROM images ORDER BY image_filename";
+	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
+	    $images = array();
+	    while ($row = mysqli_fetch_assoc($result)) {
+	        $images[] = $row;
+	    }
+	    
+	    return $images;
+	}
+	
+	/**
+	 * Fetch all posts ordered by post_date
+	 * 
+	 * @return array
+	 */
+	function get_posts() {
+	    $qStr = "SELECT post_id, post_date, post_title, post_active FROM posts ORDER BY post_date";
+	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
+	    $posts = array();
+	    while ($row = mysqli_fetch_assoc($result)) {
+	        $posts[] = $row;
+	    }
+	    
+	    return $posts;
+	}
+	
 }
 // notice there is no closing php delimiter for files that are meant to be embedded

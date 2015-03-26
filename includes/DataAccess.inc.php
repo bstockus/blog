@@ -51,9 +51,9 @@ class DataAccess{
 
 	function handle_error($err_msg){
 		if(DEBUG_MODE){
-			die($err_msg);
+			echo($err_msg);
 		}else{
-			//TODO: handle errors in production
+			echo($err_msg);
 		}
 	}
 	
@@ -73,6 +73,34 @@ class DataAccess{
 	    return $categories;
 	}
 	
+	function get_category($id) {
+	    $qStr = "SELECT category_id, category_name FROM categories WHERE category_id = ?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    $category = mysqli_fetch_assoc($stmt->get_result());
+	    return $category;
+	}
+	
+	function create_category($category) {
+	    $qStr = "INSERT INTO categories(category_name) VALUES (?)";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("s", $category['category_name'])  or $this->handle_error(mysqli_error($this->link));
+	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    if ($result) {
+	        return $this->link->insert_id;
+	    } else {
+	        return null;
+	    }
+	}
+	
+	function update_category($id, $category_name) {
+	    $qStr = "UPDATE categories SET category_name=? WHERE category_id=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("si", $category_name, $id)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
 	/**
 	 * Fetch all images ordered by image_filename
 	 * 
@@ -89,6 +117,25 @@ class DataAccess{
 	    return $images;
 	}
 	
+	function create_image($image) {
+	    $qStr = "INSERT INTO images(image_filename, image_active) VALUES (?, ?)";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ss", $image['image_filename'], $image['image_active'])  or $this->handle_error(mysqli_error($this->link));
+	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    if ($result) {
+	        return $this->link->insert_id;
+	    } else {
+	        return null;
+	    }
+	}
+	
+	function delete_image($id) {
+	    $qStr = "DELETE FROM images WHERE image_id=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
 	/**
 	 * Fetch all posts ordered by post_date
 	 * 
@@ -103,6 +150,34 @@ class DataAccess{
 	    }
 	    
 	    return $posts;
+	}
+	
+	function get_post($id) {
+	    $qStr = "SELECT post_id, post_title, post_date, post_active, user_id, category_id, post_description FROM posts WHERE post_id = ?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    $post = mysqli_fetch_assoc($stmt->get_result());
+	    return $post;
+	}
+	
+	function create_post($post) {
+	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id) VALUES (?,?,?,?)";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssi", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'])  or $this->handle_error(mysqli_error($this->link));
+	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    if ($result) {
+	        return $this->link->insert_id;
+	    } else {
+	        return null;
+	    }
+	}
+	
+	function update_post($id, $post) {
+	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=? WHERE post_id=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssii", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $id)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	}
 	
 }

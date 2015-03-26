@@ -20,7 +20,7 @@ if (MODE === "development") {
 	define("DB_USER", "root");
 	define("DB_PASSWORD", "falcon16");
 	define("DB_NAME", "blog_db");
-	define("ROOT_DIR", "/final-project/");
+	define("ROOT_DIR", "/");
 } else {
 	// PRODUCTION SETTINGS
 	define("DEBUG_MODE", false);
@@ -38,10 +38,10 @@ function get_nav_menus() {
 		    array("url" => "blog.php", "text" => "BLOG"),
 		    array("url" => "contact.php", "text" => "CONTACT")
 	    ), "control-panel" => array(
-	        array("url" => "control-panel/index.php", "text" => "HOME"),
-		    array("url" => "control-panel/categories/index.php", "text" => "CATEGORIES"),
-		    array("url" => "control-panel/posts/index.php", "text" => "POSTS"),
-		    array("url" => "control-panel/images/index.php", "text" => "IMAGES")
+	        array("url" => "admin", "text" => "HOME"),
+		    array("url" => "admin/categories/", "text" => "CATEGORIES"),
+		    array("url" => "admin/posts/", "text" => "POSTS"),
+		    array("url" => "admin/images/", "text" => "IMAGES")
 	    )
 	);
 }

@@ -1,5 +1,17 @@
 <?php
 
+require_once("includes/ViewHelpers.inc.php");
+
+// Categories Validation function
+function validate_category($category, &$errors) {
+    $valid = true;
+    if ($category['category_name'] === "") {
+        $valid = false;
+        $errors['category_name'] = "Name can't be empty!";
+    }
+    return $valid;
+}
+
 // Categories List Page
 Flight::route('GET /admin/categories', function (){
     global $da;
@@ -10,7 +22,7 @@ Flight::route('GET /admin/categories', function (){
 // Categories Create Page
 Flight::route('/admin/categories/create', function (){
    $category = array('category_name' => "");
-   render_page('admin/categories/create', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array()), 'control-panel');
+   render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories"), 'control-panel');
 });
 
 // Categories Edit Page
@@ -18,7 +30,7 @@ Flight::route('/admin/categories/@id/edit', function ($id){
     global $da;
     $category = $da->get_category($id);
     if ($category !== null) {
-        render_page('admin/categories/edit', 'Admin - Category - Edit', 'CATEGORIES', array('category' => $category, 'error' => ""), 'control-panel');
+        render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories/" . $id), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -30,15 +42,10 @@ Flight::route('POST /admin/categories/@id', function ($id){
     $category = $da->get_category($id);
     if ($category !== null) {
         $errors = array();
-        $valid = true;
         if (isset($_POST['category_name'])) {
             $category['category_name'] = $_POST['category_name'];
         }
-        if ($category['category_name'] === "") {
-            $valid = false;
-            $errors['category_name'] = "Name can't be empty!";
-        }
-        if ($valid) {
+        if (validate_category($category, $errors)) {
             if ($da->update_category($id, $_POST['category_name'])) {
                 Flight::redirect(global_url('admin/categories'));
                 return;
@@ -46,7 +53,7 @@ Flight::route('POST /admin/categories/@id', function ($id){
                 die('Category Update Error!');
             }
         } else {
-            render_page('admin/categories/edit', 'Admin - Category - Edit', 'CATEGORIES', array('category' => $category, 'errors' => $errors), 'control-panel');
+            render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories/" . $id), 'control-panel');
         }
         
     } else {
@@ -62,13 +69,8 @@ Flight::route('POST /admin/categories', function (){
         $category['category_name'] = $_POST['category_name'];
     }
     $errors = array();
-    $valid = true;
-    if ($category['category_name'] === "") {
-        $valid = false;
-        $errors['category_name'] = "Name can't be empty!";
-    }
-    if (!$valid) {
-        render_page('admin/categories/create', 'Admin - Categories - Create', 'POSTS', array('category' => $category, 'errors' => $errors), 'control-panel');
+    if (!validate_category($category, $errors)) {
+        render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories"), 'control-panel');
         return;
     } else {
         if ($da->create_category($category) !== null) {

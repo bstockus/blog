@@ -1,5 +1,7 @@
 <?php
 
+require_once("includes/ViewHelpers.inc.php");
+
 // Images List Page
 Flight::route('GET /admin/images', function (){
     global $da;

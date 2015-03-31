@@ -20,20 +20,13 @@ class AdminUtils{
 	/**
 	* Checks the session variable to see if a user has been authenticated
 	* 
-	* @param bool $redirect if not authenticated redirect to login page
-	* 
 	* @return bool
 	*/
-	function user_authenticated($redirect = false){
+	function user_authenticated(){
 		if(isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true){
 			return true;
 		}else{
-		    if ($redirect) {
-		        header('Location: login.php');
-		        die();
-		    } else {
-		        return false;
-		    }
+		    return false;
 		}
 	}
 

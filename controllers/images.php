@@ -2,6 +2,16 @@
 
 require_once("includes/ViewHelpers.inc.php");
 
+// Images Validation function
+function validate_image($image, &$errors) {
+    $valid = true;
+    if ($image['image_filename'] === "") {
+        $valid = false;
+        $errors['image_filename'] = "Filename can't be empty!";
+    }
+    return $valid;
+}
+
 // Images List Page
 Flight::route('GET /admin/images', function (){
     global $da;
@@ -12,6 +22,45 @@ Flight::route('GET /admin/images', function (){
 // Images Upload Page
 Flight::route('/admin/images/create', function (){
     render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => ""), 'control-panel');
+});
+
+// Images Edit Page
+Flight::route('/admin/images/@id/edit', function ($id){
+    global $da;
+    $image = $da->get_image($id);
+    if($image !== null) {
+        render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id), 'control-panel');
+    } else {
+        die('Not Found!');
+    }
+});
+
+// Images Update Handler
+Flight::route('POST /admin/images/@id', function ($id){
+    global $da;
+    $image = $da->get_image($id);
+    $errors = array();
+    if ($image !== null) {
+        if (isset($_POST['image_filename'])) {
+            $image['image_filename'] = $_POST['image_filename'];
+        }
+        if (!isset($_POST['image_active'])) {
+            $post['image_active'] = "no";
+        } else {
+            $post['image_active'] = "yes";
+        }
+        if (validate_image($image, $errors)) {
+            if ($da->update_image($id, $image)) {
+                Flight::redirect(global_url('admin/images'));
+            } else {
+                die('Unable to update image!');
+            }
+        } else {
+            render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id), 'control-panel');
+        }
+    } else {
+        die('Not Found!');
+    }
 });
 
 // Images Upload Handler

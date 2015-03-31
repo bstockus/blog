@@ -27,8 +27,8 @@
     <footer class="footer">
     	<div class="container">
     		&copy; 2015 Bryan Stockus, All Rights Reserved.    |    
-    		<a href="<?php echo_global_url('privacy-policy.php'); ?>">Privacy Policy</a>    |    
-    		<a href="<?php echo_global_url('contact.php'); ?>">Contact</a>
+    		<a href="<?php echo_global_url('privacy-policy'); ?>">Privacy Policy</a>    |    
+    		<a href="<?php echo_global_url('contact'); ?>">Contact</a>
     	</div>
     </footer>
   </body>

@@ -20,7 +20,7 @@ $navs .= "</ul>";
 $au = new AdminUtils();
 $user = "";
 if ($au->user_authenticated()) {
-    $user = "<ul class='nav navbar-nav navbar-right'><li><a href='#'><i class='fa fa-user'></i>" . $_SESSION['user_display_name'] . "</a></li></ul>";
+    $user = "<ul class='nav navbar-nav navbar-right'><li><a href='#'><i class='fa fa-user'></i> " . $_SESSION['user_display_name'] . "</a></li></ul>";
 }
 
 ?>

@@ -117,6 +117,15 @@ class DataAccess{
 	    return $images;
 	}
 	
+	function get_image($id) {
+	    $qStr = "SELECT image_id, image_filename, image_active FROM images WHERE image_id = ?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    $image = mysqli_fetch_assoc($stmt->get_result());
+	    return $image;
+	}
+	
 	function create_image($image) {
 	    $qStr = "INSERT INTO images(image_filename, image_active) VALUES (?, ?)";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
@@ -127,6 +136,13 @@ class DataAccess{
 	    } else {
 	        return null;
 	    }
+	}
+	
+	function update_image($id, $image) {
+	    $qStr = "UPDATE images SET image_filename=?, image_active=? WHERE image_id=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ssi", $image['image_filename'], $image['image_active'], $id)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	}
 	
 	function delete_image($id) {

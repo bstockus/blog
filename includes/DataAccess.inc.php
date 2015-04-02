@@ -31,7 +31,7 @@ class DataAccess{
 		$email = mysqli_real_escape_string($this->link, $email);
 		$password = mysqli_real_escape_string($this->link, $password);
 
-		$qStr = "SELECT user_display_name FROM users WHERE user_email = '$email' AND user_password = '$password' AND user_active = 'yes'";
+		$qStr = "SELECT user_display_name, user_id FROM users WHERE user_email = '$email' AND user_password = '$password' AND user_active = 'yes'";
 		//die($qStr);
 
 		$result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
@@ -65,12 +65,7 @@ class DataAccess{
 	function get_categories() {
 	    $qStr = "SELECT category_id, category_name FROM categories ORDER BY category_name";
 	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
-	    $categories = array();
-	    while ($row = mysqli_fetch_assoc($result)) {
-	        $categories[] = $row;
-	    }
-	    
-	    return $categories;
+	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
 	function get_category($id) {
@@ -109,12 +104,8 @@ class DataAccess{
 	function get_images() {
 	    $qStr = "SELECT image_id, image_filename, image_active FROM images ORDER BY image_filename";
 	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
-	    $images = array();
-	    while ($row = mysqli_fetch_assoc($result)) {
-	        $images[] = $row;
-	    }
-	    
-	    return $images;
+	    die(var_dump(mysqli_fetch_all($result, MYSQLI_ASSOC)));
+	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
 	function get_image($id) {
@@ -140,16 +131,16 @@ class DataAccess{
 	
 	function update_image($id, $image) {
 	    $qStr = "UPDATE images SET image_filename=?, image_active=? WHERE image_id=?";
-	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("ssi", $image['image_filename'], $image['image_active'], $id)  or $this->handle_error(mysqli_error($this->link));
 	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	}
 	
 	function delete_image($id) {
 	    $qStr = "DELETE FROM images WHERE image_id=?";
-	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
-	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id) or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute() or $this->handle_error(mysqli_error($this->link));
 	}
 	
 	/**
@@ -160,12 +151,7 @@ class DataAccess{
 	function get_posts() {
 	    $qStr = "SELECT post_id, post_date, post_title, post_active FROM posts ORDER BY post_date";
 	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
-	    $posts = array();
-	    while ($row = mysqli_fetch_assoc($result)) {
-	        $posts[] = $row;
-	    }
-	    
-	    return $posts;
+	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
 	function get_post($id) {

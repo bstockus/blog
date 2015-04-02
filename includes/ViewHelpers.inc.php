@@ -1,5 +1,7 @@
 <?php
 
+require_once('FormHelpers.inc.php');
+
 function render_page($view, $title, $navbar_id, $values, $navbar = 'main') {
     Flight::render('_navbar', array('nav_links' => get_nav_menus()[$navbar], 'selected_item' => $navbar_id), 'navbar');
     Flight::render($view, $values, 'content');

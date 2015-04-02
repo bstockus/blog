@@ -8,8 +8,18 @@ function validate_category($category, &$errors) {
     if ($category['category_name'] === "") {
         $valid = false;
         $errors['category_name'] = "Name can't be empty!";
+    } else if (strlen($category['category_name']) > 50) {
+        $valid = false;
+        $errors['category_name'] = "Name can't be longer than 50 characters in length!";
     }
     return $valid;
+}
+
+// Categories Processing function
+function process_category(&$category) {
+    if (isset($_POST['category_name'])) {
+        $category['category_name'] = $_POST['category_name'];
+    }
 }
 
 // Categories List Page
@@ -22,7 +32,7 @@ Flight::route('GET /admin/categories', function (){
 // Categories Create Page
 Flight::route('/admin/categories/create', function (){
    $category = array('category_name' => "");
-   render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories"), 'control-panel');
+   render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories", 'submit' => "Create"), 'control-panel');
 });
 
 // Categories Edit Page
@@ -30,7 +40,7 @@ Flight::route('/admin/categories/@id/edit', function ($id){
     global $da;
     $category = $da->get_category($id);
     if ($category !== null) {
-        render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories/" . $id), 'control-panel');
+        render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories/" . $id, 'submit' => "Save"), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -42,9 +52,7 @@ Flight::route('POST /admin/categories/@id', function ($id){
     $category = $da->get_category($id);
     if ($category !== null) {
         $errors = array();
-        if (isset($_POST['category_name'])) {
-            $category['category_name'] = $_POST['category_name'];
-        }
+        process_category($category);
         if (validate_category($category, $errors)) {
             if ($da->update_category($id, $_POST['category_name'])) {
                 Flight::redirect(global_url('admin/categories'));
@@ -53,7 +61,7 @@ Flight::route('POST /admin/categories/@id', function ($id){
                 die('Category Update Error!');
             }
         } else {
-            render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories/" . $id), 'control-panel');
+            render_form_page('admin/categories/edit', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories/" . $id, 'submit' => "Save"), 'control-panel');
         }
         
     } else {
@@ -65,12 +73,10 @@ Flight::route('POST /admin/categories/@id', function ($id){
 Flight::route('POST /admin/categories', function (){
     global $da;
     $category = array('category_name' => "");
-    if (isset($_POST['category_name'])) {
-        $category['category_name'] = $_POST['category_name'];
-    }
+    process_category($category);
     $errors = array();
     if (!validate_category($category, $errors)) {
-        render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories"), 'control-panel');
+        render_form_page('admin/categories/create', 'admin/categories/_form', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories", 'submit' => "Create"), 'control-panel');
         return;
     } else {
         if ($da->create_category($category) !== null) {

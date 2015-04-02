@@ -4,9 +4,14 @@
 Flight::route('GET /logout', function (){
     
     unset($_SESSION['user_display_name']);
+    unset($_SESSION['user_id']);
 	unset($_SESSION['authenticated']);
 	
-	Flight::redirect($_GET['redirect']);
+	if (isset($_POST['redirect'])) {
+	    Flight::redirect($_POST['redirect']);
+	} else {
+	    Flight::redirect('admin');
+	}
 });
 
 // Login GET route
@@ -15,6 +20,7 @@ Flight::route('GET /login', function (){
     
     // clear out the session variables any time a user comes to this page
 	unset($_SESSION['user_display_name']);
+	unset($_SESSION['user_id']);
 	unset($_SESSION['authenticated']);
 	
 	Flight::render('login', array('login_failed_message' => "", 'error_messages' => "", 'email' => "", 'redirect' => $redirect), 'content');
@@ -63,8 +69,14 @@ Flight::route('POST /login', function (){
 
 		if($user !== false){
 			$_SESSION['user_display_name'] = $user['user_display_name'];
+			$_SESSION['user_id'] = $user['user_id'];
 			$_SESSION['authenticated'] = true;
-			Flight::redirect($_POST['redirect']);
+			if (isset($_POST['redirect'])) {
+			    Flight::redirect($_POST['redirect']);
+			} else {
+			    Flight::redirect('/admin');
+			}
+			
 		}else{
 			$login_failed_message = "UNABLE TO LOG IN. PLEASE TRY AGAIN";
 			$email = "";

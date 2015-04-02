@@ -8,8 +8,23 @@ function validate_image($image, &$errors) {
     if ($image['image_filename'] === "") {
         $valid = false;
         $errors['image_filename'] = "Filename can't be empty!";
+    } else if (strlen($image['image_filename']) > 200) {
+        $valid = false;
+        $errors['image_filename'] = "Filename can't be longer than 200 characters in length!";
     }
     return $valid;
+}
+
+// Process Image function
+function process_image(&$image) {
+    if (isset($_POST['image_filename'])) {
+            $image['image_filename'] = $_POST['image_filename'];
+        }
+        if (!isset($_POST['image_active'])) {
+            $image['image_active'] = "no";
+        } else {
+            $image['image_active'] = "yes";
+        }
 }
 
 // Images List Page
@@ -29,7 +44,7 @@ Flight::route('/admin/images/@id/edit', function ($id){
     global $da;
     $image = $da->get_image($id);
     if($image !== null) {
-        render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id), 'control-panel');
+        render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -41,14 +56,7 @@ Flight::route('POST /admin/images/@id', function ($id){
     $image = $da->get_image($id);
     $errors = array();
     if ($image !== null) {
-        if (isset($_POST['image_filename'])) {
-            $image['image_filename'] = $_POST['image_filename'];
-        }
-        if (!isset($_POST['image_active'])) {
-            $post['image_active'] = "no";
-        } else {
-            $post['image_active'] = "yes";
-        }
+        process_image($image);
         if (validate_image($image, $errors)) {
             if ($da->update_image($id, $image)) {
                 Flight::redirect(global_url('admin/images'));
@@ -56,7 +64,7 @@ Flight::route('POST /admin/images/@id', function ($id){
                 die('Unable to update image!');
             }
         } else {
-            render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id), 'control-panel');
+            render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
         }
     } else {
         die('Not Found!');

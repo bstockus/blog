@@ -20,7 +20,7 @@
 ?>
         <tr>
             <td><?php echo $post['post_date']; ?></td>
-            <td><strong><?php echo $post['post_title']; ?></strong></td>
+            <td><strong><?php echo htmlspecialchars($post['post_title']); ?></strong></td>
             <td>
 <?php
                 if ($post['post_active'] === "yes") {

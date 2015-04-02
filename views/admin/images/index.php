@@ -18,10 +18,10 @@
     foreach ($images as $image) {
 ?>
         <tr>
-            <td><strong><?php echo $image['image_filename']; ?></strong></td>
+            <td><strong><?php echo htmlspecialchars($image['image_filename']); ?></strong></td>
             <td>
 <?php
-                if ($image['image_active'] === true) {
+                if ($image['image_active'] === "yes") {
                     echo "Y";
                 } else {
                     echo "N";

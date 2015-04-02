@@ -1,17 +1,12 @@
 <?php
 
 require_once("includes/ViewHelpers.inc.php");
+require_once("includes/ValidationHelpers.inc.php");
 
 // Images Validation function
 function validate_image($image, &$errors) {
     $valid = true;
-    if ($image['image_filename'] === "") {
-        $valid = false;
-        $errors['image_filename'] = "Filename can't be empty!";
-    } else if (strlen($image['image_filename']) > 200) {
-        $valid = false;
-        $errors['image_filename'] = "Filename can't be longer than 200 characters in length!";
-    }
+    $valid = validateNotEmptyAndMaxLength($valid, $image, 'image_filename', $errors, 'Filename', 200);
     return $valid;
 }
 
@@ -31,7 +26,7 @@ function process_image(&$image) {
 Flight::route('GET /admin/images', function (){
     global $da;
     $images = $da->get_images();
-    render_page('admin/images/index', 'Admin - Images', 'IMAGES', array('images' => $images), 'control-panel');
+    render_list_page('admin/images', 'index', 'Admin - Images', 'IMAGES', array('images' => $images), 'control-panel');
 });
 
 // Images Upload Page
@@ -44,7 +39,7 @@ Flight::route('/admin/images/@id/edit', function ($id){
     global $da;
     $image = $da->get_image($id);
     if($image !== null) {
-        render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
+        render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -64,7 +59,7 @@ Flight::route('POST /admin/images/@id', function ($id){
                 die('Unable to update image!');
             }
         } else {
-            render_form_page('admin/images/edit', 'admin/images/_form', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
+            render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
         }
     } else {
         die('Not Found!');

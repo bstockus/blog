@@ -104,7 +104,6 @@ class DataAccess{
 	function get_images() {
 	    $qStr = "SELECT image_id, image_filename, image_active FROM images ORDER BY image_filename";
 	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
-	    die(var_dump(mysqli_fetch_all($result, MYSQLI_ASSOC)));
 	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
@@ -183,4 +182,3 @@ class DataAccess{
 	}
 	
 }
-// notice there is no closing php delimiter for files that are meant to be embedded

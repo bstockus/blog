@@ -11,6 +11,9 @@ function validate_post($post, $categories, &$errors) {
             break;
         }
     }
+    if (!$valid) {
+        $errors['category_id'] = "You must select a valid Category for this Post!";
+    }
     if ($post['post_title'] === "") {
         $valid = false;
         $errors['post_title'] = "Title can't be empty!";
@@ -58,7 +61,7 @@ Flight::route('GET /admin/posts', function (){
 Flight::route('/admin/posts/create', function (){
     global $da;
     $categories = $da->get_categories();
-    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>"", 'post_active'=>"no");
+    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no");
     render_form_page('admin/posts/create', 'admin/posts/_form', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create"), 'control-panel');
 });
 
@@ -76,9 +79,10 @@ Flight::route('/admin/posts/@id/edit', function ($id){
 
 // Posts Create Handler
 Flight::route('POST /admin/posts', function (){
+    //die(var_dump($_POST));
     global $da;
     $categories = $da->get_categories();
-    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>"", 'post_active'=>"no", 'user_id'=>$_SESSION['user_id']);
+    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'user_id'=>$_SESSION['user_id']);
     $errors = array();
     process_post($post);
     if (!validate_post($post, $categories, $errors)) {

@@ -1,8 +1,5 @@
 <?php
 
-require_once("includes/ViewHelpers.inc.php");
-require_once("includes/ValidationHelpers.inc.php");
-
 // Categories Validation function
 function validate_category($category, &$errors) {
     $valid = true;
@@ -81,5 +78,3 @@ Flight::route('POST /admin/categories', function (){
         }
     }
 });
-
-?>

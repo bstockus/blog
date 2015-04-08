@@ -88,5 +88,3 @@ Flight::route('POST /login', function (){
 	Flight::render('layout', array('page_title' => "Login", 'navbar' => ""));
 	
 });
-
-?>

@@ -154,7 +154,7 @@ class DataAccess{
 	}
 	
 	function get_post($id) {
-	    $qStr = "SELECT post_id, post_title, post_date, post_active, user_id, category_id, post_description FROM posts WHERE post_id = ?";
+	    $qStr = "SELECT post_id, post_title, post_date, post_active, user_id, category_id, post_description, post_content FROM posts WHERE post_id = ?";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
@@ -163,9 +163,9 @@ class DataAccess{
 	}
 	
 	function create_post($post) {
-	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id) VALUES (?,?,?,?)";
+	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content) VALUES (?,?,?,?,?)";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssi", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'])  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssis", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'])  or $this->handle_error(mysqli_error($this->link));
 	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	    if ($result) {
 	        return $this->link->insert_id;
@@ -175,9 +175,9 @@ class DataAccess{
 	}
 	
 	function update_post($id, $post) {
-	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=? WHERE post_id=?";
+	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=?, post_content=? WHERE post_id=?";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssii", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssisi", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $post['post_content'], $id)  or $this->handle_error(mysqli_error($this->link));
 	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	}
 	

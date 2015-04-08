@@ -1,8 +1,5 @@
 <?php
 
-require_once("includes/ViewHelpers.inc.php");
-require_once("includes/ValidationHelpers.inc.php");
-
 // Posts Validation function
 function validate_post($post, $categories, &$errors) {
     $valid = false;
@@ -18,6 +15,7 @@ function validate_post($post, $categories, &$errors) {
     
     $valid = validateNotEmptyAndMaxLength($valid, $post, 'post_title', $errors, 'Title', 100);
     $valid = validateNotEmptyAndMaxLength($valid, $post, 'post_description', $errors, 'Description', 160);
+    $valid = validateNotEmpty($valid, $post, 'post_content', $errors, 'Content');
     
     return $valid;
 }
@@ -32,6 +30,9 @@ function process_post(&$post) {
     }
     if (isset($_POST['category_id'])) {
         $post['category_id'] = $_POST['category_id'];
+    }
+    if (isset($_POST['post_content'])) {
+        $post['post_content'] = $_POST['post_content'];
     }
     if (!isset($_POST['post_active'])) {
         $post['post_active'] = "no";
@@ -109,5 +110,3 @@ Flight::route('POST /admin/posts/@id', function ($id){
         die('Not Found!');
     }
 });
-
-?>

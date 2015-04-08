@@ -1,7 +1,5 @@
 <?php
 
-require_once("includes/ViewHelpers.inc.php");
-require_once("includes/ValidationHelpers.inc.php");
 
 // Images Validation function
 function validate_image($image, &$errors) {

@@ -12,4 +12,13 @@ function validateNotEmptyAndMaxLength($paramValid, $object, $fieldName, &$errors
     return $valid;
 }
 
+function validateNotEmpty($paramValid, $object, $fieldName, &$errors, $name) {
+    $valid = $paramValid;
+    if ($object[$fieldName] === "") {
+        $valid = false;
+        $errors[$fieldName] = "{$name} cant't be empty.";
+    }
+    return $valid;
+}
+
 ?>

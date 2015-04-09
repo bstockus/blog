@@ -2,7 +2,7 @@
 
 // Index Route
 Flight::route('/', function (){
-    render_page('index', 'Bryan Stockus', 'POSTS', array());
+    render_page('index', 'Bryan Stockus', 'HOME', array());
 });
 
 ?>

@@ -17,14 +17,14 @@ function process_category(&$category) {
 // Categories List Page
 Flight::route('GET /admin/categories', function (){
     global $da;
-    $categories = $da->get_categories();
-    render_list_page('admin/categories', 'index', 'Admin - Categories', 'CATEGORIES', array('categories' => $categories), 'control-panel');
+    $categories = $da->get_categories_with_post_counts();
+    render_list_page('admin/categories', 'index', 'Admin - Categories', 'CATEGORIES', array('categories' => $categories, 'redirect'=>"admin/categories"), 'control-panel');
 });
 
 // Categories Create Page
 Flight::route('/admin/categories/create', function (){
    $category = array('category_name' => "");
-   render_form_page('admin/categories', 'create', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories", 'submit' => "Create"), 'control-panel');
+   render_form_page('admin/categories', 'create', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories", 'submit' => "Create", 'redirect'=>"admin/categories"), 'control-panel');
 });
 
 // Categories Edit Page
@@ -32,7 +32,7 @@ Flight::route('/admin/categories/@id/edit', function ($id){
     global $da;
     $category = $da->get_category($id);
     if ($category !== null) {
-        render_form_page('admin/categories', 'edit', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories/" . $id, 'submit' => "Save"), 'control-panel');
+        render_form_page('admin/categories', 'edit', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => array(), 'url' => "admin/categories/" . $id, 'submit' => "Save", 'redirect'=>"admin/categories"), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -53,7 +53,7 @@ Flight::route('POST /admin/categories/@id', function ($id){
                 die('Category Update Error!');
             }
         } else {
-            render_form_page('admin/categories', 'edit', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories/" . $id, 'submit' => "Save"), 'control-panel');
+            render_form_page('admin/categories', 'edit', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories/" . $id, 'submit' => "Save", 'redirect'=>"admin/categories"), 'control-panel');
         }
         
     } else {
@@ -68,7 +68,7 @@ Flight::route('POST /admin/categories', function (){
     process_category($category);
     $errors = array();
     if (!validate_category($category, $errors)) {
-        render_form_page('admin/categories', 'create', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories", 'submit' => "Create"), 'control-panel');
+        render_form_page('admin/categories', 'create', 'Admin - Category - Create', 'CATEGORIES', array('category' => $category, 'errors' => $errors, 'url' => "admin/categories", 'submit' => "Create", 'redirect'=>"admin/categories"), 'control-panel');
         return;
     } else {
         if ($da->create_category($category) !== null) {

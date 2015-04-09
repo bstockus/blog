@@ -77,6 +77,15 @@ class DataAccess{
 	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
+	function get_categories_with_post_counts($exclude_inactive = false) {
+	    $qStr = "SELECT categories.category_id AS category_id, category_name, COUNT(*) AS posts_count FROM posts INNER JOIN categories ON posts.category_id = categories.category_id GROUP BY posts.category_id";
+	    if ($exclude_inactive) {
+	        $qStr = "SELECT categories.category_id AS category_id, category_name, COUNT(*) AS posts_count FROM posts INNER JOIN categories ON posts.category_id = categories.category_id WHERE post_active = 'yes' GROUP BY posts.category_id ORDER BY categories.category_name";
+	    }
+	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+	}
+	
 	function get_category($id) {
 	    $qStr = "SELECT category_id, category_name FROM categories WHERE category_id = ?";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
@@ -157,22 +166,18 @@ class DataAccess{
 	 * @return array
 	 */
 	function get_posts($exclude_inactive = false) {
-	    $qStr = "";
+	    $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id ORDER BY post_date";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_active = 'yes' ORDER BY post_date";
-	    } else {
-	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id ORDER BY post_date";
 	    }
 	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
 	function get_post($id, $exclude_inactive = false) {
-	    $qStr = "";
+	    $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ?";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ? AND post_active = 'yes'";
-	    } else {
-	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ?";
 	    }
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
@@ -182,11 +187,9 @@ class DataAccess{
 	}
 	
 	function get_posts_for_category($category_id, $exclude_inactive = false) {
-	    $qStr = "";
+	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE posts.category_id=? ORDER BY post_date";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE posts.category_id=? AND post_active = 'yes' ORDER BY post_date";
-	    } else {
-	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE posts.category_id=? ORDER BY post_date";
 	    }
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $category_id)  or $this->handle_error(mysqli_error($this->link));
@@ -195,11 +198,9 @@ class DataAccess{
 	}
 	
 	function get_posts_for_user($user_id, $exclude_inactive = false) {
-	    $qStr = "";
+	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE users.user_id=? ORDER BY post_date";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE users.user_id=? AND post_active = 'yes' ORDER BY post_date";
-	    } else {
-	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE users.user_id=? ORDER BY post_date";
 	    }
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $user_id)  or $this->handle_error(mysqli_error($this->link));
@@ -208,14 +209,22 @@ class DataAccess{
 	}
 	
 	function get_posts_for_date_range($start_date, $end_date, $exclude_inactive = false) {
-	    $qStr = "";
+	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (post_date >= ? AND post_date <= ?) ORDER BY post_date";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (post_date >= ? AND post_date <= ?) AND post_active = 'yes' ORDER BY post_date";
-	    } else {
-	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (post_date >= ? AND post_date <= ?) ORDER BY post_date";
 	    }
 	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("ss", $start_date, $end_date) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
+	}
+	
+	function get_posts_by_date($exclude_inactive = false) {
+	    $qStr = "SELECT post_date, COUNT(*) AS posts_count FROM posts GROUP BY YEAR(post_date), MONTH(post_date) ORDER BY post_date";
+	    if ($exclude_inactive) {
+	        $qStr = "SELECT post_date, COUNT(*) AS posts_count FROM posts WHERE post_active = 'yes' GROUP BY YEAR(post_date), MONTH(post_date) ORDER BY post_date";
+	    }
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
 	}

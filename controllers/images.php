@@ -24,7 +24,7 @@ function process_image(&$image) {
 Flight::route('GET /admin/images', function (){
     global $da;
     $images = $da->get_images();
-    render_list_page('admin/images', 'index', 'Admin - Images', 'IMAGES', array('images' => $images), 'control-panel');
+    render_list_page('admin/images', 'index', 'Admin - Images', 'IMAGES', array('images' => $images, 'redirect'=>"admin/images"), 'control-panel');
 });
 
 // Images Upload Page
@@ -37,7 +37,7 @@ Flight::route('/admin/images/@id/edit', function ($id){
     global $da;
     $image = $da->get_image($id);
     if($image !== null) {
-        render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
+        render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => array(), 'url' => 'admin/images/' . $id, 'submit' => "Save", 'redirect'=>"admin/images"), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -57,7 +57,7 @@ Flight::route('POST /admin/images/@id', function ($id){
                 die('Unable to update image!');
             }
         } else {
-            render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id, 'submit' => "Save"), 'control-panel');
+            render_form_page('admin/images', 'edit', 'Admin - Images - Edit', 'IMAGES', array('image' => $image, 'errors' => $errors, 'url' => 'admin/images/' . $id, 'submit' => "Save", 'redirect'=>"admin/images"), 'control-panel');
         }
     } else {
         die('Not Found!');

@@ -12,16 +12,10 @@ foreach($nav_links as $link){
 		$selected_class_name = "active";
 	}
 
-	$navs .= "<li class=\"{$selected_class_name}\"><a href=\"{$url}\">{$text}</a>";
+	$navs .= "<li class=\"{$selected_class_name}\"><a href=\"{$url}\">{$text}</a></li>";
 }
 
 $navs .= "</ul>";
-
-$au = new AdminUtils();
-$user = "";
-if ($au->user_authenticated()) {
-    $user = "<ul class='nav navbar-nav navbar-right'><li><a href='#'><i class='fa fa-user'></i> " . $_SESSION['user_display_name'] . "</a></li></ul>";
-}
 
 ?>
 
@@ -34,11 +28,35 @@ if ($au->user_authenticated()) {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Bryan Stockus</a>
+            <a class="navbar-brand" href="<?php echo_global_url(''); ?>">
+                Bryan Stockus
+<?php
+                if ($navbar === 'control-panel') {
+?>
+                    <span class="label label-default">CONTROL PANEL</span>
+<?php
+                }
+?>
+            </a>
         </div>
         <div id='navbar' class='collapse navbar-collapse'>
             <?php echo $navs; ?>
-            <?php echo $user; ?>
+            <ul class='nav navbar-nav navbar-right'>
+                <?php echo $user; ?>
+            </ul>
+<?php
+            if ($navbar !== 'control-panel') {
+?>
+                <form action="" class="search-form navbar-form navbar-right">
+                    <div class="form-group has-feedback">
+                		<label for="search" class="sr-only">Search</label>
+                		<input type="text" class="form-control" name="search" id="search" placeholder="">
+                  		<span class="glyphicon glyphicon-search form-control-feedback"></span>
+                	</div>
+                </form>
+<?php
+            }
+?>
         </div>
     </div>
 </nav>

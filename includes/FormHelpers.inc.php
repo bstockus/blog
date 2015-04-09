@@ -1,15 +1,22 @@
 <?php
 
-function submitFormControl($label) {
+function submitFormControl($label, $redirect_url) {
     
 return <<<EOD
 <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">{$label}</button>
+        <button type="submit" class="btn btn-primary">{$label}</button>
+        <a class="btn btn-default" href="{$redirect_url}">Cancel</a>
     </div>
 </div>
 EOD;
 
+}
+
+function hiddenInputFormControl($id, $value) {
+return <<<EOD
+<input type="hidden" name="{$id}" value="{$value}">
+EOD;
 }
 
 function textInputFormControl($id, $label, $placeholder, $value, $errors) {

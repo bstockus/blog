@@ -34,7 +34,8 @@ if ($error !== "") {
     </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Upload</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
+            <a class="btn btn-default" href="<?php echo_global_url('admin/images'); ?>">Cancel</a>
         </div>
     </div>
 </form>

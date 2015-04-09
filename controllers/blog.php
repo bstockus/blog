@@ -2,20 +2,47 @@
 
 $month_names = array(1 => "January", 2 => "February", 3 => "March", 4 => "April", 5 => "May", 6 => "June", 7 => "July", 8 => "August", 9 => "September", 10 => "October", 11 => "November", 12 => "December");
 
+function exclude_inactive_posts() {
+    global $au;
+    if ($au->user_authenticated()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function edits_allowed() {
+    global $au;
+    if ($au->user_authenticated()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function get_sidebar_collections($da, $exclude) {
+    $sidebar_collections = array();
+    $sidebar_collections['categories'] = $da->get_categories_with_post_counts($exclude);
+    $sidebar_collections['dates'] = $da->get_posts_by_date($exclude);
+    return $sidebar_collections;
+}
+
 // Blog Home route
 Flight::route('GET /blog', function (){
     global $da;
-    $posts = $da->get_posts(true);
-    $categories = $da->get_categories();
-    render_page('blog/index', 'Blog - Home', 'BLOG', array('posts'=>$posts, 'categories'=>$categories));
+    $exclude = exclude_inactive_posts();
+    $posts = $da->get_posts($exclude);
+    $categories = $da->get_categories_with_post_counts($exclude);
+    render_blog_list_page('index', 'Blog - Home', array('posts'=>$posts, 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog'));
 });
 
 // Blog Post route
 Flight::route('GET /blog/posts/@id', function ($id){
     global $da;
-    $post = $da->get_post($id, true);
+    $exclude = exclude_inactive_posts();
+    $post = $da->get_post($id, $exclude);
     if ($post !== null) {
-        render_page('blog/post', 'Blog - Post - ' . $post['post_title'], 'BLOG', array('post'=>$post));
+        render_page('blog/post', 'Blog - Post - ' . $post['post_title'], 'BLOG', array('post'=>$post, 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/posts/' . $id));
     } else {
         die('Not Found!');
     }
@@ -24,9 +51,11 @@ Flight::route('GET /blog/posts/@id', function ($id){
 // Blog Category List route
 Flight::route('GET /blog/categories/@id', function ($id){
     global $da;
+    $exclude = exclude_inactive_posts();
     $category = $da->get_category($id);
+    $categories = $da->get_categories_with_post_counts($exclude);
     if ($category !== null) {
-        render_page('blog/list', 'Blog - Category - ' . $category['category_name'], 'BLOG', array('title'=> $category['category_name'], 'posts'=>$da->get_posts_for_category($id, true)));
+        render_blog_list_page('list', 'Blog - Category - ' . $category['category_name'], array('title'=>"Category Posts" ,'subTitle'=> $category['category_name'], 'posts'=>$da->get_posts_for_category($id, $exclude), 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'current_category_id'=>$category['category_id'], 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/categories/' . $id));
     } else {
         die('Category Not Found!');
     }
@@ -35,9 +64,11 @@ Flight::route('GET /blog/categories/@id', function ($id){
 // Blog Users route
 Flight::route('GET /blog/users/@id', function ($id){
     global $da;
+    $exclude = exclude_inactive_posts();
+    $categories = $da->get_categories_with_post_counts(true);
     $user = $da->get_user($id);
     if ($user !== null) {
-        render_page('blog/list', 'Blog - User - ' . $user['user_display_name'], 'BLOG', array('title'=> 'User ' . $user['user_display_name'], 'posts'=>$da->get_posts_for_user($id, true)));
+        render_blog_list_page('list', 'Blog - User - ' . $user['user_display_name'], array('title'=>"User's Posts" ,'subTitle'=> $user['user_display_name'], 'posts'=>$da->get_posts_for_user($id, $exclude), 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/users/' . $id));
     } else {
         die('User Not Found!');
     }
@@ -47,10 +78,12 @@ Flight::route('GET /blog/users/@id', function ($id){
 Flight::route('GET /blog/@year/@month', function ($year, $month){
     global $da;
     global $month_names;
+    $exclude = exclude_inactive_posts();
+    $categories = $da->get_categories_with_post_counts($exclude);
     if (is_numeric($year) && is_numeric($month) && $month > 0 && $month < 13) {
-        $month_name = $month_names[$month];
-        $posts = $da->get_posts_for_date_range($year . '-' . $month . '-01', $year . '-' . $month . '-31', true);
-        render_page('blog/list', 'Blog - ' . $month_name . ' ' . $year, 'BLOG', array('title'=> $month_name . ' ' . $year, 'posts'=>$posts));
+        $month_name = $month_names[intval($month)];
+        $posts = $da->get_posts_for_date_range($year . '-' . $month . '-01', $year . '-' . $month . '-31', $exclude);
+        render_blog_list_page('list', 'Blog - ' . $month_name . ' ' . $year, array('title'=>"Posts" ,'subTitle'=> $month_name . ' ' . $year, 'posts'=>$posts, 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/' . $year . '/' . $month, 'current_date'=>array('year'=>$year, 'month'=>$month)));
     } else {
         die('Invalid Date Range!');
     }

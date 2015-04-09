@@ -52,8 +52,12 @@ Flight::route('GET /admin/posts', function (){
 Flight::route('/admin/posts/create', function (){
     global $da;
     $categories = $da->get_categories();
-    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no");
-    render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create"), 'control-panel');
+    $redirect = 'admin/posts';
+    if (isset($_GET['redirect'])) {
+        $redirect = $_GET['redirect'];
+    }
+    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'post_content'=>"");
+    render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
 });
 
 // Posts Edit Page
@@ -61,8 +65,12 @@ Flight::route('/admin/posts/@id/edit', function ($id){
     global $da;
     $post = $da->get_post($id);
     $categories = $da->get_categories();
+    $redirect = 'admin/posts';
+    if (isset($_GET['redirect'])) {
+        $redirect = $_GET['redirect'];
+    }
     if ($post !== null) {
-        render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts/" . $id, 'submit' => "Save"), 'control-panel');
+        render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts/" . $id, 'submit' => "Save", 'redirect' => $redirect), 'control-panel');
     } else {
         die('Not Found!');
     }
@@ -74,14 +82,18 @@ Flight::route('POST /admin/posts', function (){
     global $da;
     $categories = $da->get_categories();
     $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'user_id'=>$_SESSION['user_id']);
+    $redirect = 'admin/posts';
+    if (isset($_POST['redirect'])) {
+        $redirect = $_POST['redirect'];
+    }
     $errors = array();
     process_post($post);
     if (!validate_post($post, $categories, $errors)) {
-        render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts", 'submit' => "Create"), 'control-panel');
+        render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
         return;
     } else {
         if ($da->create_post($post) !== null) {
-            Flight::redirect(global_url('admin/posts'));
+            Flight::redirect(global_url($redirect));
         } else {
             die('Post Create Error!');
         }
@@ -93,17 +105,21 @@ Flight::route('POST /admin/posts/@id', function ($id){
     global $da;
     $post = $da->get_post($id);
     $categories = $da->get_categories();
+    $redirect = 'admin/posts';
+    if (isset($_POST['redirect'])) {
+        $redirect = $_POST['redirect'];
+    }
     $errors = array();
     process_post($post);
     if($post !== null) {
         if (validate_post($post, $categories, $errors)) {
             if ($da->update_post($id, $post)) {
-                Flight::redirect(global_url('admin/posts'));
+                Flight::redirect(global_url($redirect));
             } else {
                 die('Unable to update post!');
             }
         } else {
-            render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts/" . $id, 'submit' => "Save"), 'control-panel');
+            render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts/" . $id, 'submit' => "Save", 'redirect' => $redirect), 'control-panel');
         }
         
     } else {

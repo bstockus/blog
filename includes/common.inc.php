@@ -34,9 +34,9 @@ if (MODE === "development") {
 function get_nav_menus() {
     return array(
 	    "main" => array(
-	        array("url" => "index.php", "text" => "HOME"),
-		    array("url" => "blog.php", "text" => "BLOG"),
-		    array("url" => "contact.php", "text" => "CONTACT")
+	        array("url" => "", "text" => "HOME"),
+		    array("url" => "blog", "text" => "BLOG"),
+		    array("url" => "contact", "text" => "CONTACT")
 	    ), "control-panel" => array(
 	        array("url" => "admin", "text" => "HOME"),
 		    array("url" => "admin/categories/", "text" => "CATEGORIES"),

@@ -82,7 +82,7 @@ Flight::route('GET /blog/@year/@month', function ($year, $month){
     $categories = $da->get_categories_with_post_counts($exclude);
     if (is_numeric($year) && is_numeric($month) && $month > 0 && $month < 13) {
         $month_name = $month_names[intval($month)];
-        $posts = $da->get_posts_for_date_range($year . '-' . $month . '-01', $year . '-' . $month . '-31', $exclude);
+        $posts = $da->get_posts_for_date_range($year, $month, $exclude);
         render_blog_list_page('list', 'Blog - ' . $month_name . ' ' . $year, array('title'=>"Posts" ,'subTitle'=> $month_name . ' ' . $year, 'posts'=>$posts, 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/' . $year . '/' . $month, 'current_date'=>array('year'=>$year, 'month'=>$month)));
     } else {
         die('Invalid Date Range!');

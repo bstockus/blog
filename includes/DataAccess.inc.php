@@ -208,13 +208,13 @@ class DataAccess{
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
 	}
 	
-	function get_posts_for_date_range($start_date, $end_date, $exclude_inactive = false) {
-	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (post_date >= ? AND post_date <= ?) ORDER BY post_date";
+	function get_posts_for_date_range($year, $month, $exclude_inactive = false) {
+	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (YEAR(post_date) = ? AND MONTH(post_date) = ?) ORDER BY post_date";
 	    if ($exclude_inactive) {
-	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (post_date >= ? AND post_date <= ?) AND post_active = 'yes' ORDER BY post_date";
+	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE (YEAR(post_date) = ? AND MONTH(post_date) = ?) AND post_active = 'yes' ORDER BY post_date";
 	    }
 	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("ss", $start_date, $end_date) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ss", $year, $month) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
 	}

@@ -36,11 +36,3 @@ function myExceptionHandler($exception) {
 }
 
 set_exception_handler("myExceptionHandler");
-
-// WHAT'S THE DIFFERENCE BETWEEN EXCEPTIONS AND ERRORS?
-// Exceptions are thrown, and intended to be caught
-// Errors are generally not recoverable
-
-
-
-?>

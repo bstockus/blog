@@ -5,5 +5,13 @@
     <?php echo textareaFormControl('post_description', 'Description', 'Post Description', 3, $post['post_description'], $errors); ?>
     <?php echo checkboxInputFormControl('post_active', 'Active', $post['post_active']); ?>
     <?php echo textareaFormControl('post_content', 'Content', 'Post Content', 10, $post['post_content'], $errors); ?>
-    <?php echo submitFormControl($submit, global_url($redirect)); ?>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <span class='pull-right'>
+                <button class="btn btn-info" id="btn-insert-image">Insert Image</button>
+            </span>
+            <button type="submit" class="btn btn-primary"><?php echo $submit; ?></button>
+            <a class="btn btn-default" href="<?php echo_global_url($redirect); ?>">Cancel</a>
+        </div>
+    </div>
 </form>

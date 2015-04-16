@@ -6,6 +6,7 @@ require_once("includes/AdminUtils.inc.php");
 require_once("includes/DataAccess.inc.php");
 require_once("includes/ViewHelpers.inc.php");
 require_once("includes/ValidationHelpers.inc.php");
+require_once("includes/ImageHelpers.inc.php");
 
 include('controllers/site.php');
 include('controllers/admin.php');

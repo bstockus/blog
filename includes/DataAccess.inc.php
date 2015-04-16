@@ -125,8 +125,11 @@ class DataAccess{
 	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 	}
 	
-	function get_image($id) {
+	function get_image($id, $exclude_inactive = false) {
 	    $qStr = "SELECT image_id, image_filename, image_active FROM images WHERE image_id = ?";
+	    if ($exclude_inactive) {
+	        $qStr = "SELECT image_id, image_filename, image_active FROM images WHERE image_id = ? AND image_active = 'yes'";
+	    }
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));

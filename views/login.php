@@ -11,7 +11,7 @@
               Login:
           </label>
           <div class="control">
-              <input type="text" name="email" value="<?php echo($email); ?>" />
+              <input type="text" name="email" autofocus value="<?php echo($email); ?>" />
           </div>
       </div>
 

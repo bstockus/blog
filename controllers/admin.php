@@ -22,5 +22,3 @@ Flight::route('/admin/*', 'authenticate');
 Flight::route('/admin', function (){
     render_page('admin/index', 'Admin', 'HOME', array(), 'control-panel');
 });
-
-?>

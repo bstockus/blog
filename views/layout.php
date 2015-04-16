@@ -34,7 +34,9 @@
     
   </head>
   <body>
-  
+    
+    <?php echo isset($modal) ? $modal : ""; ?>
+    
     <?php echo $navbar; ?>
     
     <div class='container'>

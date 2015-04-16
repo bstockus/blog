@@ -2,24 +2,6 @@
 
 $month_names = array(1 => "January", 2 => "February", 3 => "March", 4 => "April", 5 => "May", 6 => "June", 7 => "July", 8 => "August", 9 => "September", 10 => "October", 11 => "November", 12 => "December");
 
-function exclude_inactive_posts() {
-    global $au;
-    if ($au->user_authenticated()) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function edits_allowed() {
-    global $au;
-    if ($au->user_authenticated()) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function get_sidebar_collections($da, $exclude) {
     $sidebar_collections = array();
     $sidebar_collections['categories'] = $da->get_categories_with_post_counts($exclude);
@@ -42,7 +24,7 @@ Flight::route('GET /blog/posts/@id', function ($id){
     $exclude = exclude_inactive_posts();
     $post = $da->get_post($id, $exclude);
     if ($post !== null) {
-        render_page('blog/post', 'Blog - Post - ' . $post['post_title'], 'BLOG', array('post'=>$post, 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/posts/' . $id));
+        render_blog_post_page('post', 'Blog - Post - ' . $post['post_title'], array('post'=>$post, 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/posts/' . $id, 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed()));
     } else {
         die('Not Found!');
     }

@@ -57,7 +57,7 @@ Flight::route('/admin/posts/create', function (){
         $redirect = $_GET['redirect'];
     }
     $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'post_content'=>"");
-    render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
+    render_form_page_with_image_gallery('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
 });
 
 // Posts Edit Page
@@ -70,7 +70,7 @@ Flight::route('/admin/posts/@id/edit', function ($id){
         $redirect = $_GET['redirect'];
     }
     if ($post !== null) {
-        render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts/" . $id, 'submit' => "Save", 'redirect' => $redirect), 'control-panel');
+        render_form_page_with_image_gallery('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts/" . $id, 'submit' => "Save", 'redirect' => $redirect), 'control-panel');
     } else {
         die('Not Found!');
     }

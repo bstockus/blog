@@ -20,5 +20,3 @@ function validateNotEmpty($paramValid, $object, $fieldName, &$errors, $name) {
     }
     return $valid;
 }
-
-?>

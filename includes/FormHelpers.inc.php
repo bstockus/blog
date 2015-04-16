@@ -121,5 +121,3 @@ function selectFormControl($id, $label, $placeholder, $items, $value_key, $label
 <?php
     
 }
-
-?>

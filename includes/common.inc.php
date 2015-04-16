@@ -89,5 +89,3 @@ function global_url($url) {
 function echo_global_url($url) {
     echo global_url($url);
 }
-
-?>

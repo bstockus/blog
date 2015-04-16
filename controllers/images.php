@@ -1,6 +1,5 @@
 <?php
 
-
 // Images Validation function
 function validate_image($image, &$errors) {
     $valid = true;
@@ -19,6 +18,17 @@ function process_image(&$image) {
             $image['image_active'] = "yes";
         }
 }
+
+// Images JSON List Page
+Flight::route('GET /admin/images.json', function (){
+    global $da;
+    $images = $da->get_images();
+    $images_response = array("images"=>array());
+    foreach($images as $image) {
+        $images_response["images"][] = array("image_thumb_url"=>global_url('images/' . $image['image_id']. '?thumb=yes'), "image_url"=>global_url('images/' . $image['image_id']), "image_filename"=>$image['image_filename'], "image_active"=>($image['image_active'] === 'yes') ? true : false);
+    }
+    Flight::json($images_response);
+});
 
 // Images List Page
 Flight::route('GET /admin/images', function (){
@@ -84,6 +94,9 @@ Flight::route('POST /admin/images', function (){
         $check = getimagesize($_FILES["image_file"]["tmp_name"]);
         if($check !== false) {
             if (move_uploaded_file($_FILES["image_file"]["tmp_name"], "uploads/" . $id)) {
+                $image = new Imagick("uploads/" . $id);
+                $image->thumbnailImage(100, 100, true);
+                $image->writeImage("uploads/thumbs/" . $id);
                 Flight::redirect(global_url('admin/images'));
             } else {
                 render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => "Error Uploading Image!"), 'control-panel');
@@ -97,5 +110,3 @@ Flight::route('POST /admin/images', function (){
         render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => "Unable to create image!"), 'control-panel');
     }
 });
-
-?>

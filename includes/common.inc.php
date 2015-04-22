@@ -21,6 +21,7 @@ if (MODE === "development") {
 	define("DB_PASSWORD", "falcon16");
 	define("DB_NAME", "blog_db");
 	define("ROOT_DIR", "/");
+	define("NOTIFICATION_EMAIL_ADDRESS", "bstockus@icloud.com");
 } else {
 	// PRODUCTION SETTINGS
 	define("DEBUG_MODE", false);
@@ -29,6 +30,7 @@ if (MODE === "development") {
 	define("DB_PASSWORD", "production password goes here");
 	define("DB_NAME", "production db name goes here");
 	define("ROOT_DIR", "production url root location goes here");
+	define("NOTIFICATION_EMAIL_ADDRESS", "production notification email address goes here");
 }
 
 function get_nav_menus() {
@@ -41,7 +43,9 @@ function get_nav_menus() {
 	        array("url" => "admin", "text" => "HOME"),
 		    array("url" => "admin/categories/", "text" => "CATEGORIES"),
 		    array("url" => "admin/posts/", "text" => "POSTS"),
-		    array("url" => "admin/images/", "text" => "IMAGES")
+		    array("url" => "admin/images/", "text" => "IMAGES"),
+		    array("url" => "admin/contacts/", "text" => "CONTACTS"),
+		    array("url" => "admin/settings/", "text" => "SETTINGS")
 	    )
 	);
 }
@@ -72,6 +76,10 @@ function db_connect($db_hostname, $db_user, $db_password, $db_database) {
 
 	return $link;
 
+}
+
+function notification_email_address() {
+    return NOTIFICATION_EMAIL_ADDRESS;
 }
 
 function is_development_mode() {

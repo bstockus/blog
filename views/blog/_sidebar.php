@@ -25,7 +25,7 @@
 <?php
         }
 ?>
-        <?php echo $category['category_name']; ?>
+        <?php sanitize_echo($category['category_name']); ?>
 <?php
         if (!$active) {
 ?>

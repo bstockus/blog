@@ -2,7 +2,9 @@
 
 // Index Route
 Flight::route('/', function (){
-    render_page('index', 'Bryan Stockus', 'HOME', array());
+    global $da;
+    $homepage_content = $da->get_homepage_content();
+    render_page('index', 'Bryan Stockus', 'HOME', array('homepage_content'=>$homepage_content));
 });
 
 // Image route

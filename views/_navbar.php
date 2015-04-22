@@ -47,10 +47,10 @@ $navs .= "</ul>";
 <?php
             if ($navbar !== 'control-panel') {
 ?>
-                <form action="" class="search-form navbar-form navbar-right">
+                <form method="GET" action="<?php echo_global_url('search'); ?>" class="search-form navbar-form navbar-right">
                     <div class="form-group has-feedback">
                 		<label for="search" class="sr-only">Search</label>
-                		<input type="text" class="form-control" name="search" id="search" placeholder="">
+                		<input type="text" class="form-control" name="q" id="search" placeholder="">
                   		<span class="glyphicon glyphicon-search form-control-feedback"></span>
                 	</div>
                 </form>

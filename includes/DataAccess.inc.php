@@ -189,6 +189,18 @@ class DataAccess{
 	    return $post;
 	}
 	
+	function get_posts_for_search_query($query, $exclude_inactive = false) {
+	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE MATCH(posts.post_raw_content) AGAINST(?);";
+	    if ($exclude_inactive) {
+	        $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE MATCH(posts.post_raw_content) AGAINST(?) AND post_active = 'yes' ORDER BY post_date";
+	    }
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("s", $query)  or $this->handle_error(mysqli_error($this->link));
+	    
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
+	}
+	
 	function get_posts_for_category($category_id, $exclude_inactive = false) {
 	    $qStr = "SELECT post_id, post_date, post_title, post_active, post_description, category_name, user_display_name, posts.category_id AS category_id, posts.user_id AS user_id FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE posts.category_id=? ORDER BY post_date";
 	    if ($exclude_inactive) {
@@ -233,9 +245,10 @@ class DataAccess{
 	}
 	
 	function create_post($post) {
-	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content) VALUES (?,?,?,?,?)";
+	    $post['post_raw_content'] = strip_tags($post['post_content']);
+	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content, post_raw_content) VALUES (?,?,?,?,?,?)";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssis", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'])  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssiss", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'], $post['post_raw_content'])  or $this->handle_error(mysqli_error($this->link));
 	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	    if ($result) {
 	        return $this->link->insert_id;
@@ -245,10 +258,86 @@ class DataAccess{
 	}
 	
 	function update_post($id, $post) {
-	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=?, post_content=? WHERE post_id=?";
+	    $post['post_raw_content'] = strip_tags($post['post_content']);
+	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=?, post_content=?, post_raw_content=? WHERE post_id=?";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssisi", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $post['post_content'], $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssissi", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $id)  or $this->handle_error(mysqli_error($this->link));
 	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
+	function delete_post($id) {
+	    $qStr = "DELETE FROM posts WHERE post_id=?";
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id) or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute() or $this->handle_error(mysqli_error($this->link));
+	}
+	
+	function create_contact($contact) {
+	    $qStr = "INSERT INTO contacts(contact_name, contact_email, contact_comment) VALUES (?,?,?)";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sss", $contact['contact_name'], $contact['contact_email'], $contact['contact_comment'])  or $this->handle_error(mysqli_error($this->link));
+	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    if ($result) {
+	        return $this->link->insert_id;
+	    } else {
+	        return null;
+	    }
+	}
+	
+	function get_contacts() {
+	    $qStr = "SELECT contact_id, contact_name, contact_email, contact_comment FROM contacts";
+	    $result = mysqli_query($this->link, $qStr) or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+	}
+	
+	function get_contact($id) {
+	    $qStr = "SELECT contact_id, contact_name, contact_email, contact_comment FROM contacts WHERE contact_id=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_assoc($stmt->get_result());
+	}
+	
+	function get_notification_email_address() {
+	    $qStr = "SELECT notifcation_email_address FROM settings";
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC)[0]['notification_email_address'];
+	}
+	
+	function set_notification_email_address($notification_email_address) {
+	    $qStr = "UPDATE settings SET notifcation_email_address=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("s", $notification_email_address)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
+	function get_homepage_content() {
+	     $qStr = "SELECT homepage_content FROM settings";
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC)[0]['homepage_content'];
+	}
+	
+	function set_homepage_content($homepage_content) {
+	    $qStr = "UPDATE settings SET homepage_content=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("s", $homepage_content)  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
+	function set_settings($settings) {
+	    $qStr = "UPDATE settings SET homepage_content=?, notification_email_address=?";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ss", $settings['homepage_content'], $settings['notification_email_address'])  or $this->handle_error(mysqli_error($this->link));
+	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	}
+	
+	function get_settings() {
+	    $qStr = "SELECT homepage_content, notification_email_address FROM settings";
+	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC)[0];
 	}
 	
 }

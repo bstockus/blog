@@ -110,3 +110,34 @@ Flight::route('POST /admin/images', function (){
         render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => "Unable to create image!"), 'control-panel');
     }
 });
+
+// Images Delete Page
+Flight::route('GET /admin/images/@id/remove', function ($id){
+    global $da;
+    $image = $da->get_image($id);
+    if($image !== null) {
+        $redirect = "admin/images";
+        if (isset($_GET['redirect'])) {
+            $redirect = $_GET['redirect'];
+        }
+        render_admin_page('admin/images', 'delete', 'Admin - Images - Delete', 'IMAGES', array('image' => $image, 'url' => 'admin/images/' . $id . '/remove', 'redirect'=>$redirect), 'control-panel');
+    } else {
+        die('Not Found!');
+    }
+});
+
+// Images Delete Handler
+Flight::route('POST /admin/images/@id/remove', function ($id){
+    global $da;
+    $image = $da->get_image($id);
+    if($image !== null) {
+        $redirect = "admin/images";
+        if (isset($_POST['redirect'])) {
+            $redirect = $_POST['redirect'];
+        }
+        $da->delete_image($id);
+        Flight::redirect(global_url($redirect));
+    } else {
+        die('Not Found!');
+    }
+});

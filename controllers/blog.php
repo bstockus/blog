@@ -71,3 +71,17 @@ Flight::route('GET /blog/@year/@month', function ($year, $month){
     }
     
 });
+
+// Blog Search route
+Flight::route('/search', function (){
+    global $da;
+    $exclude = exclude_inactive_posts();
+    $query = "";
+    if (isset($_GET['q'])) {
+        $query = $_GET['q'];
+    }
+    $posts = $da->get_posts_for_search_query($query, $exclude);
+    $values = array('query'=>$query, 'posts'=>$posts, 'edits_allowed'=>edits_allowed(), 'this_url'=>'search?q=' . urlencode($query));
+    Flight::render('blog/_list', $values, 'list');
+    render_page('blog/search', 'Blog - Search', 'BLOG', $values);
+});

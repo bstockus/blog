@@ -92,6 +92,7 @@ Flight::route('POST /admin/posts', function (){
         render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
         return;
     } else {
+        $post['post_raw_content'] = strip_tags($post['post_content']);
         if ($da->create_post($post) !== null) {
             Flight::redirect(global_url($redirect));
         } else {
@@ -113,6 +114,7 @@ Flight::route('POST /admin/posts/@id', function ($id){
     process_post($post);
     if($post !== null) {
         if (validate_post($post, $categories, $errors)) {
+            
             if ($da->update_post($id, $post)) {
                 Flight::redirect(global_url($redirect));
             } else {
@@ -122,6 +124,37 @@ Flight::route('POST /admin/posts/@id', function ($id){
             render_form_page('admin/posts', 'edit', 'Admin - Posts - Edit', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts/" . $id, 'submit' => "Save", 'redirect' => $redirect), 'control-panel');
         }
         
+    } else {
+        die('Not Found!');
+    }
+});
+
+// Posts Delete Page
+Flight::route('GET /admin/posts/@id/remove', function ($id){
+    global $da;
+    $post = $da->get_post($id);
+    if($post !== null) {
+        $redirect = "admin/posts";
+        if (isset($_GET['redirect'])) {
+            $redirect = $_GET['redirect'];
+        }
+        render_admin_page('admin/posts', 'delete', 'Admin - Posts - Delete', 'POSTS', array('post' => $post, 'url' => 'admin/posts/' . $id . '/remove', 'redirect'=>$redirect), 'control-panel');
+    } else {
+        die('Not Found!');
+    }
+});
+
+// Posts Delete Handler
+Flight::route('POST /admin/posts/@id/remove', function ($id){
+    global $da;
+    $post = $da->get_post($id);
+    if($post !== null) {
+        $redirect = "admin/posts";
+        if (isset($_POST['redirect'])) {
+            $redirect = $_POST['redirect'];
+        }
+        $da->delete_post($id);
+        Flight::redirect(global_url($redirect));
     } else {
         die('Not Found!');
     }

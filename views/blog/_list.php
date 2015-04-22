@@ -10,10 +10,10 @@ foreach($posts as $post) {
         }
 ?>
         <a href="<?php echo_global_url('blog/posts/' . $post['post_id']); ?>">
-            <?php echo($post['post_title']); ?>
+            <?php sanitize_echo($post['post_title']); ?>
         </a>
     </h4>
-    <p><?php echo($post['post_description']); ?></p>
+    <p><?php sanitize_echo($post['post_description']); ?></p>
     <p>
 <?php
         if (isset($edits_allowed) && $edits_allowed === true) {
@@ -31,10 +31,10 @@ foreach($posts as $post) {
 ?>
         Category: 
             <a href="<?php echo_global_url('blog/categories/' . $post['category_id']); ?>">
-                <?php echo($post['category_name']); ?>
+                <?php sanitize_echo($post['category_name']); ?>
             </a>
     	| <i class="fa fa-user"></i> <a href="<?php echo_global_url('blog/users/' . $post['user_id']); ?>">
-    	    <?php echo($post['user_display_name']); ?>
+    	    <?php sanitize_echo($post['user_display_name']); ?>
     	</a> 
     	| <i class="fa fa-calendar-o"></i> 
     	    <a href="<?php echo_global_url('blog/' . date('Y', strtotime($post['post_date'])) . '/' . date('m', strtotime($post['post_date']))); ?>">

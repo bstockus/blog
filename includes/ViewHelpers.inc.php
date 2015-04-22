@@ -9,13 +9,16 @@ function render_page($view, $title, $navbar_id, $values, $navbar = 'main') {
     Flight::render('layout', array('page_title' => $title));
 }
 
+function render_admin_page($base, $view, $title, $navbar_id, $values, $navbar = 'main') {
+    render_page($base . '/' . $view, $title, $navbar_id, $values, $navbar);
+}
+
 function render_form_page($base, $view, $title, $navbar_id, $values, $navbar = 'main') {
     Flight::render($base . '/_form', $values, 'form');
     render_page($base . '/' . $view, $title, $navbar_id, $values, $navbar);
 }
 
 function render_form_page_with_image_gallery($base, $view, $title, $navbar_id, $values, $navbar = 'main') {
-    //$values['stylesheets'] = array();
     $values['scripts'] = array('https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.min.js', global_url('js/image-gallery.js'));
     FLight::render($base . '/_imagesPickerModal', array(), 'modal');
     render_form_page($base, $view, $title, $navbar_id, $values, $navbar);

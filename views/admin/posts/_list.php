@@ -22,6 +22,9 @@
 ?>
             <td>
                 <span class='pull-right'>
+                    <a href="<?php echo_global_url('blog/posts/' . $post['post_id']); ?>" class="btn btn-warning btn-xs" role="button">
+                        <i class="fa fa-desktop"></i> View
+                    </a>
                     <a href="<?php echo_global_url('admin/posts/' . $post['post_id'] . "/edit"); ?>" class="btn btn-primary btn-xs" role="button">
                         <i class="fa fa-pencil-square-o"></i> Edit
                     </a>

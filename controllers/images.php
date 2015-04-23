@@ -81,6 +81,9 @@ Flight::route('POST /admin/images', function (){
     if (!isset($_POST['image_filename']) || $_POST['image_filename'] === "") {
         render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => "You must specify a filename for the image!"), 'control-panel');
         return;
+    } else if (!isset($_FILES) || !isset($_FILES["image_file"]) || !isset($_FILES["image_file"]["tmp_name"]) || $_FILES["image_file"]["tmp_name"] == "") {
+        render_page('admin/images/upload', 'Admin - Images - Upload', 'IMAGES', array('error' => "You must specify a file for the image!"), 'control-panel');
+        return;
     } else {
         $image['image_filename'] = $_POST['image_filename'];
     }

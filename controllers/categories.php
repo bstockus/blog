@@ -17,7 +17,7 @@ function process_category(&$category) {
 // Categories List Page
 Flight::route('GET /admin/categories', function (){
     global $da;
-    $categories = $da->get_categories_with_post_counts();
+    $categories = $da->get_categories();
     render_list_page('admin/categories', 'index', 'Admin - Categories', 'CATEGORIES', array('categories' => $categories, 'redirect'=>"admin/categories"), 'control-panel');
 });
 

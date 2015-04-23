@@ -32,7 +32,7 @@ Flight::route('GET /login', function (){
 Flight::route('POST /login', function (){
     $email = "";
 	$password = "";
-
+    global $pu;
 	$error_messages = array();
 
 	$login_failed_message = "";
@@ -52,14 +52,8 @@ Flight::route('POST /login', function (){
 	}
 
 	if(!empty($error_messages)){
-		
-		// wrap each error message with the proper validation markup
-		include("../includes/PageUtils.inc.php");
-		$pu = new PageUtils();
-
-		foreach($error_messages as $key => $value){
-			$error_messages[$key] = $pu->wrap_validation_msg($value);
-		}
+	    
+	    $login_failed_message = "You have an input problem!";
 
 	}else{
 		global $da;

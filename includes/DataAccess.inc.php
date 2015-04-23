@@ -246,9 +246,9 @@ class DataAccess{
 	
 	function create_post($post) {
 	    $post['post_raw_content'] = strip_tags($post['post_content']);
-	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content, post_raw_content) VALUES (?,?,?,?,?,?)";
+	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content, post_raw_content, user_id) VALUES (?,?,?,?,?,?,?)";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssiss", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'], $post['post_raw_content'])  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("sssissi", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $post['user_id'])  or $this->handle_error(mysqli_error($this->link));
 	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	    if ($result) {
 	        return $this->link->insert_id;
@@ -299,7 +299,7 @@ class DataAccess{
 	}
 	
 	function get_notification_email_address() {
-	    $qStr = "SELECT notifcation_email_address FROM settings";
+	    $qStr = "SELECT notification_email_address FROM settings";
 	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC)[0]['notification_email_address'];
@@ -338,6 +338,13 @@ class DataAccess{
 	    $stmt = $this->link->prepare($qStr) or $this->handle_error(mysqli_error($this->link));
 	    $stmt->execute() or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC)[0];
+	}
+	
+	function get_users() {
+	    $qStr = "SELECT user_id, user_email, user_password, user_display_name, user_role, user_active, user_display_name FROM users";
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
 	}
 	
 }

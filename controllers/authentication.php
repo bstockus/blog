@@ -53,7 +53,7 @@ Flight::route('POST /login', function (){
 
 	if(!empty($error_messages)){
 	    
-	    $login_failed_message = "You have an input problem!";
+	    
 
 	}else{
 		global $da;

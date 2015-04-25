@@ -19,27 +19,34 @@ Flight::route('/images/@id', function ($id){
             $fileName = 'uploads/' . $id;
         }
         
-        //Set the content-type header as appropriate
-        $imageInfo = getimagesize($fileName);
-        switch ($imageInfo[2]) {
-            case IMAGETYPE_JPEG:
-                header("Content-Type: image/jpg");
-                break;
-            case IMAGETYPE_GIF:
-                header("Content-Type: image/gif");
-                break;
-            case IMAGETYPE_PNG:
-                header("Content-Type: image/png");
-                break;
-            default:
-                break;
+        if (file_exists($fileName)) {
+            //Set the content-type header as appropriate
+            $imageInfo = getimagesize($fileName);
+            switch ($imageInfo[2]) {
+                case IMAGETYPE_JPEG:
+                    header("Content-Type: image/jpg");
+                    break;
+                case IMAGETYPE_GIF:
+                    header("Content-Type: image/gif");
+                    break;
+                case IMAGETYPE_PNG:
+                    header("Content-Type: image/png");
+                    break;
+                default:
+                    break;
+            }
+            
+            // Set the content-length header
+            header('Content-Length: ' . filesize($fileName));
+            
+            // Write the image bytes to the client
+            readfile($fileName);
+        } else {
+            http_response_code(404);
+            exit('Not Found');
         }
         
-        // Set the content-length header
-        header('Content-Length: ' . filesize($fileName));
         
-        // Write the image bytes to the client
-        readfile($fileName);
         
     } else {
         http_response_code(404);

@@ -169,7 +169,7 @@ class DataAccess{
 	 * @return array
 	 */
 	function get_posts($exclude_inactive = false) {
-	    $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id ORDER BY post_date";
+	    $qStr = "SELECT post_id, post_title, post_short_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id ORDER BY post_date";
 	    if ($exclude_inactive) {
 	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_active = 'yes' ORDER BY post_date";
 	    }
@@ -178,9 +178,9 @@ class DataAccess{
 	}
 	
 	function get_post($id, $exclude_inactive = false) {
-	    $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ?";
+	    $qStr = "SELECT post_id, post_title, post_date, post_active, post_type, post_short_title, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ?";
 	    if ($exclude_inactive) {
-	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ? AND post_active = 'yes'";
+	        $qStr = "SELECT post_id, post_title, post_date, post_active, post_type, post_short_title, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_id = ? AND post_active = 'yes'";
 	    }
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
 	    $stmt->bind_param("i", $id)  or $this->handle_error(mysqli_error($this->link));
@@ -199,6 +199,17 @@ class DataAccess{
 	    
 	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	    return mysqli_fetch_all($stmt->get_result(), MYSQLI_ASSOC);
+	}
+	
+	function get_post_for_short_title($short_title, $exclude_inactive = false) {
+	    $qStr = "SELECT post_id, post_title, post_short_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_short_title = ? ORDER BY post_date";
+	    if ($exclude_inactive) {
+	        $qStr = "SELECT post_id, post_title, post_date, post_active, posts.user_id AS user_id, posts.category_id AS category_id, post_description, post_content, user_display_name, category_name FROM posts INNER JOIN categories ON posts.category_id = categories.category_id INNER JOIN users ON posts.user_id = users.user_id WHERE post_active = 'yes' AND post_short_title = ? ORDER BY post_date";
+	    }
+	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("s", $short_title)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
+	    return mysqli_fetch_assoc($stmt->get_result());
 	}
 	
 	function get_posts_for_category($category_id, $exclude_inactive = false) {
@@ -246,9 +257,9 @@ class DataAccess{
 	
 	function create_post($post) {
 	    $post['post_raw_content'] = strip_tags($post['post_content']);
-	    $qStr = "INSERT INTO posts(post_title, post_description, post_active, category_id, post_content, post_raw_content, user_id) VALUES (?,?,?,?,?,?,?)";
+	    $qStr = "INSERT INTO posts(post_title, post_short_title, post_description, post_active, category_id, post_content, post_raw_content, user_id) VALUES (?,?,?,?,?,?,?,?)";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssissi", $post['post_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $post['user_id'])  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ssssissi", $post['post_title'], $post['post_short_title'], $post['post_description'], $post['post_active'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $post['user_id'])  or $this->handle_error(mysqli_error($this->link));
 	    $result = $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	    if ($result) {
 	        return $this->link->insert_id;
@@ -259,9 +270,9 @@ class DataAccess{
 	
 	function update_post($id, $post) {
 	    $post['post_raw_content'] = strip_tags($post['post_content']);
-	    $qStr = "UPDATE posts SET post_title=?, post_active=?, post_description=?, category_id=?, post_content=?, post_raw_content=? WHERE post_id=?";
+	    $qStr = "UPDATE posts SET post_title=?, post_short_title=?, post_active=?, post_description=?, category_id=?, post_content=?, post_raw_content=? WHERE post_id=?";
 	    $stmt = $this->link->prepare($qStr)  or $this->handle_error(mysqli_error($this->link));
-	    $stmt->bind_param("sssissi", $post['post_title'], $post['post_active'], $post['post_description'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $id)  or $this->handle_error(mysqli_error($this->link));
+	    $stmt->bind_param("ssssissi", $post['post_title'], $post['post_short_title'], $post['post_active'], $post['post_description'], $post['category_id'], $post['post_content'], $post['post_raw_content'], $id)  or $this->handle_error(mysqli_error($this->link));
 	    return $stmt->execute()  or $this->handle_error(mysqli_error($this->link));
 	}
 	

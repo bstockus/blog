@@ -23,8 +23,4 @@ include('controllers/contacts.php');
 $da = new DataAccess($link);
 $au = new AdminUtils();
 
-Flight::route('GET /email', function (){
-    sendMessage('bstockus@gmail.com', 'Test', 'Test');
-});
-
 Flight::start();

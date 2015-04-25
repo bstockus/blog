@@ -1,7 +1,7 @@
 <?php
 
 // Posts Validation function
-function validate_post($post, $categories, &$errors) {
+function validate_post($post, $posts, $categories, &$errors) {
     $valid = false;
     foreach($categories as $category) {
         if ($category['category_id'] == $post['category_id']) {
@@ -11,6 +11,17 @@ function validate_post($post, $categories, &$errors) {
     }
     if (!$valid) {
         $errors['category_id'] = "You must select a valid Category for this Post!";
+    } else {
+        $valid = validateNotEmptyAndMaxLength($valid, $post, 'post_short_title', $errors, 'Short Title', 100);
+        if ($valid) {
+            foreach($posts as $test_post) {
+                if($test_post['post_id'] != $post['post_id'] && $test_post['post_short_title'] == $post['post_short_title']) {
+                    $valid = false;
+                    $errors['post_short_title'] = "You must enter a unique Short Title for this post";
+                    break;
+                }
+            }
+        }
     }
     
     $valid = validateNotEmptyAndMaxLength($valid, $post, 'post_title', $errors, 'Title', 100);
@@ -24,6 +35,9 @@ function validate_post($post, $categories, &$errors) {
 function process_post(&$post) {
     if (isset($_POST['post_title'])) {
         $post['post_title'] = $_POST['post_title'];
+    }
+    if (isset($_POST['post_short_title'])) {
+        $post['post_short_title'] = $_POST['post_short_title'];
     }
     if (isset($_POST['post_description'])) {
         $post['post_description'] = $_POST['post_description'];
@@ -56,7 +70,7 @@ Flight::route('/admin/posts/create', function (){
     if (isset($_GET['redirect'])) {
         $redirect = $_GET['redirect'];
     }
-    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'post_content'=>"");
+    $post = array('post_id'=>"", 'post_title'=>"", 'post_short_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'post_content'=>"", 'post_type'=>"html");
     render_form_page_with_image_gallery('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => array(), 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
 });
 
@@ -81,14 +95,15 @@ Flight::route('POST /admin/posts', function (){
     //die(var_dump($_POST));
     global $da;
     $categories = $da->get_categories();
-    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'user_id'=>$_SESSION['user_id']);
+    $posts = $da->get_posts();
+    $post = array('post_id'=>"", 'post_title'=>"", 'post_description'=>"", 'category_id'=>null, 'post_active'=>"no", 'user_id'=>$_SESSION['user_id'], 'post_short_title'=>"", 'post_type'=>"html");
     $redirect = 'admin/posts';
     if (isset($_POST['redirect'])) {
         $redirect = $_POST['redirect'];
     }
     $errors = array();
     process_post($post);
-    if (!validate_post($post, $categories, $errors)) {
+    if (!validate_post($post, $posts, $categories, $errors)) {
         render_form_page('admin/posts', 'create', 'Admin - Posts - Create', 'POSTS', array('post' => $post, 'categories' => $categories, 'errors' => $errors, 'url' => "admin/posts", 'submit' => "Create", 'redirect' => $redirect), 'control-panel');
         return;
     } else {
@@ -106,6 +121,7 @@ Flight::route('POST /admin/posts/@id', function ($id){
     global $da;
     $post = $da->get_post($id);
     $categories = $da->get_categories();
+    $posts = $da->get_posts();
     $redirect = 'admin/posts';
     if (isset($_POST['redirect'])) {
         $redirect = $_POST['redirect'];
@@ -113,7 +129,7 @@ Flight::route('POST /admin/posts/@id', function ($id){
     $errors = array();
     process_post($post);
     if($post !== null) {
-        if (validate_post($post, $categories, $errors)) {
+        if (validate_post($post, $posts, $categories, $errors)) {
             
             if ($da->update_post($id, $post)) {
                 Flight::redirect(global_url($redirect));

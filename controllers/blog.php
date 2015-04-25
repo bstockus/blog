@@ -72,6 +72,18 @@ Flight::route('GET /blog/@year/@month', function ($year, $month){
     
 });
 
+// Blog Short Url route
+Flight::route('GET /blog/@title', function ($title){
+    global $da;
+    $exclude = exclude_inactive_posts();
+    $post = $da->get_post_for_short_title($title, $exclude);
+    if ($post !== null) {
+        render_blog_post_page('post', 'Blog - Post - ' . $post['post_title'], array('post'=>$post, 'edits_allowed'=>edits_allowed(), 'this_url'=>'blog/' . $title, 'sidebar_collections'=>get_sidebar_collections($da, $exclude), 'edits_allowed'=>edits_allowed()));
+    } else {
+        die('Not Found!');
+    }
+});
+
 // Blog Search route
 Flight::route('/search', function (){
     global $da;

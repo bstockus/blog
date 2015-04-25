@@ -30,6 +30,9 @@ Flight::route('GET /login', function (){
 
 // Login POST route
 Flight::route('POST /login', function (){
+    
+    //TODO: Clean-up this method to conform to the way Forms are handled in other parts of this site.
+    
     $email = "";
 	$password = "";
     global $pu;
@@ -52,7 +55,6 @@ Flight::route('POST /login', function (){
 	}
 
 	if(!empty($error_messages)){
-	    
 	    
 
 	}else{
